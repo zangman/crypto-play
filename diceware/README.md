@@ -4,9 +4,10 @@ Similar to [this site](https://www.rempe.us/diceware/#eff), but runs offline.
 
 # Wordlist sources
 Diceware wordlist: [link](http://world.std.com/~reinhold/diceware.wordlist.asc)
+
 EFF wordlist: [link](https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt)
 
-#Usage:
+# Usage:
 
     python gen.py --wordlist=<eff/diceware> --num=<number of words> --times=<number of phrases>
 
