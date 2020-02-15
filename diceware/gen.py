@@ -6,9 +6,9 @@ from Crypto.Random import random
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_integer('num', 4, 'Number of words to generate.')
+flags.DEFINE_integer('num', 6, 'Number of words to generate.')
 flags.DEFINE_string('wordlist', 'eff', 'wordlist to use (eff/diceware)')
-flags.DEFINE_integer('times', 1, 'Number of times to run.')
+flags.DEFINE_integer('times', 10, 'Number of times to run.')
 
 
 def get_wordlist():
