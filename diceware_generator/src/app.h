@@ -12,11 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "app.h"
-#include <iostream>
+#pragma once
 
-int main(int argc, char **argv) {
+#include "main_window.h"
+#include <glibmm/refptr.h>
+#include <gtkmm/application.h>
+#include <memory>
 
-  auto app = App::create();
-  return app->run();
-}
+class App : public Gtk::Application {
+public:
+  static Glib::RefPtr<App> create();
+
+protected:
+  std::unique_ptr<MainWindow> window_;
+
+  App();
+  void CreateWindow();
+  void on_startup() override;
+  void on_activate() override;
+};

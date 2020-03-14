@@ -13,10 +13,20 @@
 // limitations under the License.
 
 #include "app.h"
-#include <iostream>
 
-int main(int argc, char **argv) {
+Glib::RefPtr<App> App::create() {
+  auto app = Glib::RefPtr<App>(new App());
+  return app;
+}
 
-  auto app = App::create();
-  return app->run();
+App::App() {}
+
+void App::on_activate() { CreateWindow(); }
+
+void App::on_startup() { Gtk::Application::on_startup(); }
+
+void App::CreateWindow() {
+  window_ = std::make_unique<MainWindow>();
+  add_window(*window_);
+  window_->show();
 }

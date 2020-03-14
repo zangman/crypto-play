@@ -13,19 +13,36 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.16)
+
 project(DicewareGenerator VERSION 1.0)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 find_package(PkgConfig)
 pkg_check_modules(GTKMM gtkmm-3.0)
+
 find_library(LIB_SODIUM sodium)
 if (NOT LIB_SODIUM)
   message(FATAL_ERROR "libsodium not found. Please install it.")
 endif()
+
 link_directories(${GTKMM_LIBRARY_DIRS})
 include_directories(${GTKMM_INCLUDE_DIRS})
-add_executable(DicewareGenerator src/main.cc src/main_window.cc src/diceware.cc src/main_window.h src/diceware.h)
+
+add_executable(DicewareGenerator
+  src/main.cc
+
+  src/main_window.cc
+  src/diceware.cc
+  src/app.cc
+
+  src/main_window.h
+  src/diceware.h
+  src/app.h
+)
 configure_file(src/eff_large_wordlist.txt ${CMAKE_CURRENT_BINARY_DIR}/eff_large_wordlist.txt COPYONLY)
 configure_file(src/diceware.wordlist.asc ${CMAKE_CURRENT_BINARY_DIR}/diceware.wordlist.asc COPYONLY)
+
 target_link_libraries(DicewareGenerator ${GTKMM_LIBRARIES})
 target_link_libraries(DicewareGenerator ${LIB_SODIUM})
