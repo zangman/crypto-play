@@ -30,4 +30,5 @@ protected:
   void CreateWindow();
   void on_startup() override;
   void on_activate() override;
+  void on_settings();
 };

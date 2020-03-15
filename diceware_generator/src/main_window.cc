@@ -13,10 +13,7 @@
 // limitations under the License.
 
 #include "main_window.h"
-#include <giomm/resource.h>
-#include <giomm/simpleactiongroup.h>
 #include <gtkmm/main.h>
-#include <gtkmm/menubutton.h>
 #include <sodium.h>
 
 const std::string MainWindow::SPECIAL_CHARS_{"!@#$%^&*();.,"};
@@ -36,12 +33,6 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::InitializeLayout() {
-  Gtk::MenuButton menu_button;
-  auto menu = Gio::Menu::create();
-  menu->append("Settings", "app.settings");
-
-  auto action_group = Gio::SimpleActionGroup::create();
-
   frm_wordlists_.add(box_wordlists_);
   frm_options_.add(box_options_);
   frm_num_words_.add(box_num_words_);

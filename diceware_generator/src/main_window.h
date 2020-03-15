@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "diceware.h"
+#include <gtkmm/applicationwindow.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
 #include <gtkmm/checkbutton.h>
@@ -20,11 +21,10 @@
 #include <gtkmm/frame.h>
 #include <gtkmm/radiobutton.h>
 #include <gtkmm/togglebutton.h>
-#include <gtkmm/window.h>
 #include <utility>
 #include <vector>
 
-class MainWindow : public Gtk::Window {
+class MainWindow : public Gtk::ApplicationWindow {
 public:
   MainWindow();
 
