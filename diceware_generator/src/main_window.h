@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "diceware.h"
+#include <gtkmm/aboutdialog.h>
 #include <gtkmm/applicationwindow.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
@@ -61,6 +62,8 @@ protected:
 
   Gtk::Entry ent_password_;
 
+  Gtk::AboutDialog about_dialog_;
+
   Diceware diceware_;
 
   std::vector<std::string> words_;
@@ -71,9 +74,12 @@ protected:
   std::pair<int, int> random_word_position_;
   int num_words_;
 
+  void CreateHeaderBar();
   void InitializeLayout();
   void InitializeSignals();
   void UpdateDisplay();
+  void InitializeAboutDialog();
+  void ShowAboutDialog();
 
   void OnSelectWordlist(const Diceware::Wordlist wordlist);
   void OnChangeNumWords(const int num);

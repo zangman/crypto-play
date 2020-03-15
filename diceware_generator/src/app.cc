@@ -24,16 +24,7 @@ App::App() : Gtk::Application("org.diceware") {}
 
 void App::on_activate() { CreateWindow(); }
 
-void App::on_startup() {
-  std::cout << "In sratrup\n";
-  Gtk::Application::on_startup();
-  add_action("settings", sigc::mem_fun(*this, &App::on_settings));
-  auto options_menu = Gio::Menu::create();
-  options_menu->append("_Settings", "app.settings");
-  set_app_menu(options_menu);
-}
-
-void App::on_settings() { std::cout << "Hello\n"; }
+void App::on_startup() { Gtk::Application::on_startup(); }
 
 void App::CreateWindow() {
   window_ = std::make_unique<MainWindow>();

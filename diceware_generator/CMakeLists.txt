@@ -43,6 +43,7 @@ add_executable(DicewareGenerator
 )
 configure_file(src/eff_large_wordlist.txt ${CMAKE_CURRENT_BINARY_DIR}/eff_large_wordlist.txt COPYONLY)
 configure_file(src/diceware.wordlist.asc ${CMAKE_CURRENT_BINARY_DIR}/diceware.wordlist.asc COPYONLY)
+configure_file(src/dice.svg ${CMAKE_CURRENT_BINARY_DIR}/dice.svg COPYONLY)
 
 target_link_libraries(DicewareGenerator ${GTKMM_LIBRARIES})
 target_link_libraries(DicewareGenerator ${LIB_SODIUM})

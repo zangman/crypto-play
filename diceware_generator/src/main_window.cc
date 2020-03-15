@@ -13,7 +13,10 @@
 // limitations under the License.
 
 #include "main_window.h"
+#include <gtkmm/headerbar.h>
 #include <gtkmm/main.h>
+#include <gtkmm/menubutton.h>
+#include <gtkmm/separatormenuitem.h>
 #include <sodium.h>
 
 const std::string MainWindow::SPECIAL_CHARS_{"!@#$%^&*();.,"};
@@ -26,13 +29,42 @@ MainWindow::MainWindow()
       chk_random_char_{"Random Character"}, btn_copy_{"Copy"},
       btn_quit_{"Quit"}, rdo_eff_{"EFF"}, rdo_diceware_{"Diceware"},
       wordlist_{Diceware::Wordlist::EFF}, num_words_{6} {
+  CreateHeaderBar();
   InitializeLayout();
   InitializeSignals();
+  InitializeAboutDialog();
   GenerateNewWords();
   UpdateDisplay();
 }
 
+void MainWindow::CreateHeaderBar() {
+  auto headerbar = Gtk::make_managed<Gtk::HeaderBar>();
+  headerbar->set_title("Diceware Generator");
+  auto menu_btn = Gtk::make_managed<Gtk::MenuButton>();
+  auto separator = Glib::RefPtr<Gtk::MenuItem>(new Gtk::SeparatorMenuItem());
+
+  auto menu = Gio::Menu::create();
+  auto about_menu = Gio::Menu::create();
+  about_menu->append("About", "win.about");
+  menu->append_section(about_menu);
+
+  auto quit_menu = Gio::Menu::create();
+  quit_menu->append("Quit", "win.quit");
+  menu->append_section(quit_menu);
+
+  menu_btn->set_menu_model(menu);
+  headerbar->pack_end(*menu_btn);
+
+  set_titlebar(*headerbar);
+  headerbar->show();
+  menu_btn->show();
+
+  add_action("about", sigc::mem_fun(*this, &MainWindow::ShowAboutDialog));
+  add_action("quit", sigc::mem_fun(*this, &MainWindow::Quit));
+}
+
 void MainWindow::InitializeLayout() {
+
   frm_wordlists_.add(box_wordlists_);
   frm_options_.add(box_options_);
   frm_num_words_.add(box_num_words_);
@@ -111,6 +143,21 @@ void MainWindow::InitializeSignals() {
 
   chk_random_char_.signal_clicked().connect(
       sigc::mem_fun(*this, &MainWindow::OnSelectRandom));
+}
+
+void MainWindow::InitializeAboutDialog() {
+  about_dialog_.set_program_name("Diceware Generator");
+  about_dialog_.set_version("1.0");
+  about_dialog_.set_comments("A simple diceware password generator.");
+  about_dialog_.set_license("Apache-2.0");
+  about_dialog_.set_website("https://github.com/zangman/crypto-play");
+  about_dialog_.set_website_label("Github");
+  about_dialog_.set_logo(Gdk::Pixbuf::create_from_file("./dice.svg"));
+}
+
+void MainWindow::ShowAboutDialog() {
+  about_dialog_.show();
+  about_dialog_.present();
 }
 
 void MainWindow::GenerateNewWords() {
