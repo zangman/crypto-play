@@ -17,8 +17,10 @@
 #include <iostream>
 #include <sodium.h>
 
-const std::string Diceware::EFF_FILE = "eff_large_wordlist.txt";
-const std::string Diceware::DICEWARE_FILE = "diceware.wordlist.asc";
+const std::string Diceware::EFF_FILE =
+    "../share/diceware_generator/eff_large_wordlist.txt";
+const std::string Diceware::DICEWARE_FILE =
+    "../share/diceware_generator/diceware.wordlist.asc";
 
 Diceware::Diceware() {
   eff_words_ = ReadFile(EFF_FILE);

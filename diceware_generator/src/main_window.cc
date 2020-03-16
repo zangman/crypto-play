@@ -185,7 +185,8 @@ void MainWindow::InitializeAboutDialog() {
   about_dialog_.set_license(license_str);
   about_dialog_.set_website("https://github.com/zangman/crypto-play");
   about_dialog_.set_website_label("Github");
-  about_dialog_.set_logo(Gdk::Pixbuf::create_from_file("./dice.svg"));
+  about_dialog_.set_logo(
+      Gdk::Pixbuf::create_from_file("../share/diceware_generator/dice.svg"));
 }
 
 void MainWindow::ShowAboutDialog() {
@@ -205,7 +206,7 @@ void MainWindow::InitializeConfigFilePath() {
 }
 
 bool MainWindow::LoadSettings() {
-  if (!std::filesystem::exists("settings.txt")) {
+  if (!std::filesystem::exists(config_file_)) {
     std::cerr << "Couldn't find settings file.\n";
     return false;
   }

@@ -41,9 +41,32 @@ add_executable(DicewareGenerator
   src/diceware.h
   src/app.h
 )
-configure_file(src/eff_large_wordlist.txt ${CMAKE_CURRENT_BINARY_DIR}/eff_large_wordlist.txt COPYONLY)
-configure_file(src/diceware.wordlist.asc ${CMAKE_CURRENT_BINARY_DIR}/diceware.wordlist.asc COPYONLY)
-configure_file(src/dice.svg ${CMAKE_CURRENT_BINARY_DIR}/dice.svg COPYONLY)
 
 target_link_libraries(DicewareGenerator ${GTKMM_LIBRARIES})
 target_link_libraries(DicewareGenerator ${LIB_SODIUM})
+
+install(TARGETS DicewareGenerator
+  # Below is for testing only.
+  # RUNTIME DESTINATION $ENV{HOME}/tmp/bin
+  RUNTIME DESTINATION /usr/bin
+  COMPONENT binaries
+)
+
+install(FILES
+  share/diceware_generator/eff_large_wordlist.txt
+  share/diceware_generator/diceware.wordlist.asc
+  share/diceware_generator/dice.svg
+  # Below is for testing only.
+  # DESTINATION $ENV{HOME}/tmp/share/diceware_generator
+  DESTINATION /usr/share/diceware_generator
+  COMPONENT config
+)
+
+set(INSTALL_MANIFEST ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt)
+
+add_custom_target(uninstall
+  COMMAND cat ${INSTALL_MANIFEST} | xargs -n1 rm
+  COMMAND rmdir /usr/share/diceware_generator
+  COMMAND rm ${INSTALL_MANIFEST}
+  DEPENDS ${INSTALL_MANIFEST}
+)
