@@ -179,7 +179,10 @@ void MainWindow::InitializeAboutDialog() {
   about_dialog_.set_program_name("Diceware Generator");
   about_dialog_.set_version("1.0");
   about_dialog_.set_comments("A simple diceware password generator.");
-  about_dialog_.set_license("Apache-2.0");
+  auto license_str =
+      "Licensed under Apache-2.0. Refer to\n\n"
+      "https://www.apache.org/licenses/LICENSE-2.0.txt\n\nfor full text.";
+  about_dialog_.set_license(license_str);
   about_dialog_.set_website("https://github.com/zangman/crypto-play");
   about_dialog_.set_website_label("Github");
   about_dialog_.set_logo(Gdk::Pixbuf::create_from_file("./dice.svg"));
