@@ -30,8 +30,7 @@ MainWindow::MainWindow()
       box_buttons_{Gtk::ORIENTATION_HORIZONTAL}, chk_hyphen_{"Hyphens"},
       chk_space_{"Spaces"}, btn_generate_{"Generate"},
       chk_random_char_{"Random Character"}, btn_copy_{"Copy"},
-      btn_quit_{"Quit"}, rdo_eff_{"EFF"},
-      rdo_diceware_{"Diceware"}, wordlist_{Diceware::Wordlist::EFF} {
+      btn_quit_{"Quit"}, rdo_eff_{"EFF"}, rdo_diceware_{"Diceware"} {
 
   CreateHeaderBar();
   LoadSettings();
@@ -84,13 +83,13 @@ void MainWindow::InitializeLayout() {
   box_wordlists_.pack_start(rdo_eff_);
   box_wordlists_.pack_start(rdo_diceware_);
 
-  //  if (settings_.wordlist == Diceware::Wordlist::EFF) {
-  //    rdo_eff_.set_active(true);
-  //  } else {
-  //    rdo_diceware_.set_active(true);
-  //  }
-
   rdo_diceware_.join_group(rdo_eff_);
+
+  if (settings_.wordlist == Diceware::Wordlist::EFF) {
+    rdo_eff_.set_active(true);
+  } else {
+    rdo_diceware_.set_active(true);
+  }
 
   box_options_.pack_start(chk_hyphen_);
   box_options_.pack_start(chk_space_);
@@ -199,7 +198,10 @@ bool MainWindow::LoadSettings() {
     return false;
   }
 
-  //  ifs >> settings_.wordlist;
+  std::string wordlist_str;
+  ifs >> wordlist_str;
+  settings_.wordlist = Diceware::GetEnum(wordlist_str);
+  std::cout << wordlist_str;
   ifs >> settings_.is_hyphen;
   ifs >> settings_.is_space;
   ifs >> settings_.is_random;
@@ -217,6 +219,9 @@ bool MainWindow::SaveSettings() {
     return false;
   }
 
+  auto wordlist_str = Diceware::GetEnumString(settings_.wordlist);
+
+  ofs << wordlist_str << std::endl;
   ofs << settings_.is_hyphen << std::endl;
   ofs << settings_.is_space << std::endl;
   ofs << settings_.is_random << std::endl;
@@ -227,8 +232,8 @@ bool MainWindow::SaveSettings() {
 }
 
 void MainWindow::GenerateNewWords() {
-  words_ = diceware_.Generate(wordlist_, settings_.num_words);
-  if (is_random_) {
+  words_ = diceware_.Generate(settings_.wordlist, settings_.num_words);
+  if (settings_.is_random) {
     InsertSpecialChar();
   }
 }
@@ -254,7 +259,7 @@ void MainWindow::OnClickGenerate() {
 }
 
 void MainWindow::OnSelectWordlist(const Diceware::Wordlist wordlist) {
-  wordlist_ = wordlist;
+  settings_.wordlist = wordlist;
   GenerateNewWords();
   UpdateDisplay();
 }
@@ -288,14 +293,12 @@ void MainWindow::OnSelectSpace() {
 }
 
 void MainWindow::OnSelectRandom() {
-  if (!is_random_) {
+  if (settings_.is_random) {
     InsertSpecialChar();
-    is_random_ = true;
-    settings_.is_random = true;
+    settings_.is_random = false;
   } else {
     RemoveSpecialChar();
-    is_random_ = false;
-    settings_.is_random = false;
+    settings_.is_random = true;
   }
   UpdateDisplay();
 }

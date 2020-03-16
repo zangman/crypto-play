@@ -20,6 +20,9 @@
 class Diceware {
 public:
   enum class Wordlist { EFF, DICEWARE };
+  static std::string GetEnumString(Wordlist enum_val);
+  static Wordlist GetEnum(std::string enum_str);
+
   Diceware();
   std::vector<std::string> Generate(Wordlist wordlist, int num_words);
 

@@ -25,6 +25,22 @@ Diceware::Diceware() {
   diceware_words_ = ReadFile(DICEWARE_FILE);
 }
 
+std::string Diceware::GetEnumString(Diceware::Wordlist wordlist) {
+  if (wordlist == Diceware::Wordlist::EFF) {
+    return "eff";
+  } else {
+    return "diceware";
+  }
+}
+
+Diceware::Wordlist Diceware::GetEnum(std::string enum_str) {
+  if (enum_str == "eff") {
+    return Diceware::Wordlist::EFF;
+  } else {
+    return Diceware::Wordlist::DICEWARE;
+  }
+}
+
 std::vector<std::string> Diceware::ReadFile(const std::string &file_path) {
   std::vector<std::string> words;
   std::ifstream word_file(file_path);

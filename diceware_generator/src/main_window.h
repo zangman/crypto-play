@@ -29,7 +29,7 @@ class MainWindow : public Gtk::ApplicationWindow {
 public:
   MainWindow();
   struct Settings {
-    // Diceware::Wordlist wordlist = Diceware::Wordlist::EFF;
+    Diceware::Wordlist wordlist = Diceware::Wordlist::EFF;
     bool is_hyphen = false;
     bool is_space = false;
     bool is_random = false;
@@ -74,12 +74,7 @@ protected:
   Diceware diceware_;
 
   std::vector<std::string> words_;
-  Diceware::Wordlist wordlist_;
-  bool is_hyphen_;
-  bool is_space_;
-  bool is_random_;
   std::pair<int, int> random_word_position_;
-  int num_words_;
 
   Settings settings_;
 
