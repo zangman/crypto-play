@@ -13,10 +13,13 @@
 // limitations under the License.
 
 #include "main_window.h"
+#include <filesystem>
+#include <fstream>
 #include <gtkmm/headerbar.h>
 #include <gtkmm/main.h>
 #include <gtkmm/menubutton.h>
 #include <gtkmm/separatormenuitem.h>
+#include <iostream>
 #include <sodium.h>
 
 const std::string MainWindow::SPECIAL_CHARS_{"!@#$%^&*();.,"};
@@ -27,9 +30,11 @@ MainWindow::MainWindow()
       box_buttons_{Gtk::ORIENTATION_HORIZONTAL}, chk_hyphen_{"Hyphens"},
       chk_space_{"Spaces"}, btn_generate_{"Generate"},
       chk_random_char_{"Random Character"}, btn_copy_{"Copy"},
-      btn_quit_{"Quit"}, rdo_eff_{"EFF"}, rdo_diceware_{"Diceware"},
-      wordlist_{Diceware::Wordlist::EFF}, num_words_{6} {
+      btn_quit_{"Quit"}, rdo_eff_{"EFF"},
+      rdo_diceware_{"Diceware"}, wordlist_{Diceware::Wordlist::EFF} {
+
   CreateHeaderBar();
+  LoadSettings();
   InitializeLayout();
   InitializeSignals();
   InitializeAboutDialog();
@@ -79,11 +84,29 @@ void MainWindow::InitializeLayout() {
   box_wordlists_.pack_start(rdo_eff_);
   box_wordlists_.pack_start(rdo_diceware_);
 
+  //  if (settings_.wordlist == Diceware::Wordlist::EFF) {
+  //    rdo_eff_.set_active(true);
+  //  } else {
+  //    rdo_diceware_.set_active(true);
+  //  }
+
   rdo_diceware_.join_group(rdo_eff_);
 
   box_options_.pack_start(chk_hyphen_);
   box_options_.pack_start(chk_space_);
   box_options_.pack_start(chk_random_char_);
+
+  if (settings_.is_hyphen) {
+    chk_hyphen_.set_active(true);
+  }
+
+  if (settings_.is_space) {
+    chk_space_.set_active(true);
+  }
+
+  if (settings_.is_random) {
+    chk_random_char_.set_active(true);
+  }
 
   box_buttons_.pack_start(btn_copy_);
   box_buttons_.pack_start(btn_quit_);
@@ -99,11 +122,13 @@ void MainWindow::InitializeLayout() {
   Gtk::RadioButton::Group group;
 
   for (int i = 6; i <= 10; ++i) {
-    Gtk::RadioButton *rdo =
-        Gtk::make_managed<Gtk::RadioButton>(group, std::to_string(i));
+    auto rdo = Gtk::make_managed<Gtk::RadioButton>(group, std::to_string(i));
     rdo->signal_clicked().connect(sigc::bind<int>(
         sigc::mem_fun(*this, &MainWindow::OnChangeNumWords), i));
     box_num_words_.pack_start(*rdo);
+    if (settings_.num_words == i) {
+      rdo->set_active(true);
+    }
   }
 
   frm_options_.set_label("Options");
@@ -143,6 +168,8 @@ void MainWindow::InitializeSignals() {
 
   chk_random_char_.signal_clicked().connect(
       sigc::mem_fun(*this, &MainWindow::OnSelectRandom));
+
+  signal_hide().connect(sigc::mem_fun(*this, &MainWindow::OnHide));
 }
 
 void MainWindow::InitializeAboutDialog() {
@@ -160,8 +187,47 @@ void MainWindow::ShowAboutDialog() {
   about_dialog_.present();
 }
 
+bool MainWindow::LoadSettings() {
+  if (!std::filesystem::exists("settings.txt")) {
+    std::cerr << "Couldn't find settings file.\n";
+    return false;
+  }
+
+  std::ifstream ifs{"settings.txt"};
+  if (!ifs.is_open()) {
+    std::cerr << "Couldn't open settings file. Using defaults." << std::endl;
+    return false;
+  }
+
+  //  ifs >> settings_.wordlist;
+  ifs >> settings_.is_hyphen;
+  ifs >> settings_.is_space;
+  ifs >> settings_.is_random;
+  ifs >> settings_.num_words;
+
+  ifs.close();
+
+  return true;
+}
+
+bool MainWindow::SaveSettings() {
+  std::ofstream ofs{"settings.txt"};
+  if (!ofs.is_open()) {
+    std::cerr << "Couldn't save settings.\n";
+    return false;
+  }
+
+  ofs << settings_.is_hyphen << std::endl;
+  ofs << settings_.is_space << std::endl;
+  ofs << settings_.is_random << std::endl;
+  ofs << settings_.num_words << std::endl;
+
+  ofs.close();
+  return true;
+}
+
 void MainWindow::GenerateNewWords() {
-  words_ = diceware_.Generate(wordlist_, num_words_);
+  words_ = diceware_.Generate(wordlist_, settings_.num_words);
   if (is_random_) {
     InsertSpecialChar();
   }
@@ -171,11 +237,11 @@ std::string MainWindow::GetPassword() {
   std::string pass = "";
   for (int i = 0; i < words_.size(); ++i) {
     pass += words_[i];
-    if (is_hyphen_ && i != words_.size() - 1) {
+    if (settings_.is_hyphen && i != words_.size() - 1) {
       pass += '-';
     }
 
-    if (is_space_ && i != words_.size() - 1) {
+    if (settings_.is_space && i != words_.size() - 1) {
       pass += ' ';
     }
   }
@@ -194,29 +260,29 @@ void MainWindow::OnSelectWordlist(const Diceware::Wordlist wordlist) {
 }
 
 void MainWindow::OnChangeNumWords(const int num) {
-  num_words_ = num;
+  settings_.num_words = num;
   GenerateNewWords();
   UpdateDisplay();
 }
 
 void MainWindow::OnSelectHyphen() {
-  is_hyphen_ = !is_hyphen_;
+  settings_.is_hyphen = !settings_.is_hyphen;
   if (chk_space_.get_active()) {
     sig_space_clicked_.block();
     chk_space_.set_active(false);
     sig_space_clicked_.unblock();
-    is_space_ = false;
+    settings_.is_space = false;
   }
   UpdateDisplay();
 }
 
 void MainWindow::OnSelectSpace() {
-  is_space_ = !is_space_;
+  settings_.is_space = !settings_.is_space;
   if (chk_hyphen_.get_active()) {
     sig_hyphen_clicked_.block();
     chk_hyphen_.set_active(false);
     sig_hyphen_clicked_.unblock();
-    is_hyphen_ = false;
+    settings_.is_hyphen = false;
   }
   UpdateDisplay();
 }
@@ -225,15 +291,17 @@ void MainWindow::OnSelectRandom() {
   if (!is_random_) {
     InsertSpecialChar();
     is_random_ = true;
+    settings_.is_random = true;
   } else {
     RemoveSpecialChar();
     is_random_ = false;
+    settings_.is_random = false;
   }
   UpdateDisplay();
 }
 
 void MainWindow::InsertSpecialChar() {
-  auto word_pos = randombytes_uniform(num_words_);
+  auto word_pos = randombytes_uniform(settings_.num_words);
   auto selected_word = words_[word_pos];
   auto char_pos = randombytes_uniform(selected_word.size());
 
@@ -271,5 +339,7 @@ void MainWindow::OnClipboardClear() {
   // Do nothing.
 }
 void MainWindow::UpdateDisplay() { ent_password_.set_text(GetPassword()); }
+
+void MainWindow::OnHide() { SaveSettings(); }
 
 void MainWindow::Quit() { hide(); }

@@ -28,6 +28,13 @@
 class MainWindow : public Gtk::ApplicationWindow {
 public:
   MainWindow();
+  struct Settings {
+    // Diceware::Wordlist wordlist = Diceware::Wordlist::EFF;
+    bool is_hyphen = false;
+    bool is_space = false;
+    bool is_random = false;
+    int num_words = 8;
+  };
 
 protected:
   static const std::string SPECIAL_CHARS_;
@@ -74,12 +81,16 @@ protected:
   std::pair<int, int> random_word_position_;
   int num_words_;
 
+  Settings settings_;
+
   void CreateHeaderBar();
   void InitializeLayout();
   void InitializeSignals();
   void UpdateDisplay();
   void InitializeAboutDialog();
   void ShowAboutDialog();
+  bool LoadSettings();
+  bool SaveSettings();
 
   void OnSelectWordlist(const Diceware::Wordlist wordlist);
   void OnChangeNumWords(const int num);
@@ -94,5 +105,6 @@ protected:
   void OnClickCopy();
   void OnClipboardPaste(Gtk::SelectionData &selection_data, guint);
   void OnClipboardClear();
+  void OnHide();
   void Quit();
 };
