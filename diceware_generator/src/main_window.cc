@@ -20,7 +20,10 @@
 #include <gtkmm/menubutton.h>
 #include <gtkmm/separatormenuitem.h>
 #include <iostream>
+#include <pwd.h>
 #include <sodium.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 const std::string MainWindow::SPECIAL_CHARS_{"!@#$%^&*();.,"};
 
@@ -32,6 +35,7 @@ MainWindow::MainWindow()
       chk_random_char_{"Random Character"}, btn_copy_{"Copy"},
       btn_quit_{"Quit"}, rdo_eff_{"EFF"}, rdo_diceware_{"Diceware"} {
 
+  InitializeConfigFilePath();
   CreateHeaderBar();
   LoadSettings();
   InitializeLayout();
@@ -186,13 +190,24 @@ void MainWindow::ShowAboutDialog() {
   about_dialog_.present();
 }
 
+void MainWindow::InitializeConfigFilePath() {
+  std::string homedir;
+  homedir = getenv("HOME");
+  if (homedir.empty()) {
+    homedir = getpwuid(getuid())->pw_dir;
+  }
+  auto config_dir = homedir + "/.config/diceware_generator";
+  std::filesystem::create_directories(config_dir);
+  config_file_ = config_dir + "/settings.txt";
+}
+
 bool MainWindow::LoadSettings() {
   if (!std::filesystem::exists("settings.txt")) {
     std::cerr << "Couldn't find settings file.\n";
     return false;
   }
 
-  std::ifstream ifs{"settings.txt"};
+  std::ifstream ifs{config_file_};
   if (!ifs.is_open()) {
     std::cerr << "Couldn't open settings file. Using defaults." << std::endl;
     return false;
@@ -201,7 +216,7 @@ bool MainWindow::LoadSettings() {
   std::string wordlist_str;
   ifs >> wordlist_str;
   settings_.wordlist = Diceware::GetEnum(wordlist_str);
-  std::cout << wordlist_str;
+
   ifs >> settings_.is_hyphen;
   ifs >> settings_.is_space;
   ifs >> settings_.is_random;
@@ -213,7 +228,8 @@ bool MainWindow::LoadSettings() {
 }
 
 bool MainWindow::SaveSettings() {
-  std::ofstream ofs{"settings.txt"};
+
+  std::ofstream ofs{config_file_};
   if (!ofs.is_open()) {
     std::cerr << "Couldn't save settings.\n";
     return false;

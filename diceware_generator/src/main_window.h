@@ -77,7 +77,9 @@ protected:
   std::pair<int, int> random_word_position_;
 
   Settings settings_;
+  std::string config_file_;
 
+  void InitializeConfigFilePath();
   void CreateHeaderBar();
   void InitializeLayout();
   void InitializeSignals();
