@@ -13,18 +13,18 @@
 // limitations under the License.
 
 #include "diceware.h"
+#include "util.h"
 #include <fstream>
 #include <iostream>
 #include <sodium.h>
 
-const std::string Diceware::EFF_FILE =
-    "../share/diceware_generator/eff_large_wordlist.txt";
-const std::string Diceware::DICEWARE_FILE =
-    "../share/diceware_generator/diceware.wordlist.asc";
+const std::string Diceware::EFF_FILE = "/eff_large_wordlist.txt";
+const std::string Diceware::DICEWARE_FILE = "/diceware.wordlist.asc";
 
 Diceware::Diceware() {
-  eff_words_ = ReadFile(EFF_FILE);
-  diceware_words_ = ReadFile(DICEWARE_FILE);
+  auto share_dir = util::GetShareDir();
+  eff_words_ = ReadFile(share_dir + EFF_FILE);
+  diceware_words_ = ReadFile(share_dir + DICEWARE_FILE);
 }
 
 std::string Diceware::GetEnumString(Diceware::Wordlist wordlist) {

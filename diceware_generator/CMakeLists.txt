@@ -33,13 +33,15 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 add_executable(DicewareGenerator
   src/main.cc
 
-  src/main_window.cc
-  src/diceware.cc
   src/app.cc
+  src/diceware.cc
+  src/main_window.cc
+  src/util.cc
 
-  src/main_window.h
-  src/diceware.h
   src/app.h
+  src/diceware.h
+  src/main_window.h
+  src/util.h
 )
 
 target_link_libraries(DicewareGenerator ${GTKMM_LIBRARIES})

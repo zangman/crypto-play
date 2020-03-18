@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "main_window.h"
+#include "util.h"
 #include <filesystem>
 #include <fstream>
 #include <gtkmm/headerbar.h>
@@ -20,10 +21,7 @@
 #include <gtkmm/menubutton.h>
 #include <gtkmm/separatormenuitem.h>
 #include <iostream>
-#include <pwd.h>
 #include <sodium.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 const std::string MainWindow::SPECIAL_CHARS_{"!@#$%^&*();.,"};
 
@@ -176,6 +174,8 @@ void MainWindow::InitializeSignals() {
 }
 
 void MainWindow::InitializeAboutDialog() {
+  auto share_dir = util::GetShareDir();
+
   about_dialog_.set_program_name("Diceware Generator");
   about_dialog_.set_version("1.0");
   about_dialog_.set_comments("A simple diceware password generator.");
@@ -186,7 +186,7 @@ void MainWindow::InitializeAboutDialog() {
   about_dialog_.set_website("https://github.com/zangman/crypto-play");
   about_dialog_.set_website_label("Github");
   about_dialog_.set_logo(
-      Gdk::Pixbuf::create_from_file("../share/diceware_generator/dice.svg"));
+      Gdk::Pixbuf::create_from_file(share_dir + "/dice.svg"));
 }
 
 void MainWindow::ShowAboutDialog() {
@@ -195,13 +195,7 @@ void MainWindow::ShowAboutDialog() {
 }
 
 void MainWindow::InitializeConfigFilePath() {
-  std::string homedir;
-  homedir = getenv("HOME");
-  if (homedir.empty()) {
-    homedir = getpwuid(getuid())->pw_dir;
-  }
-  auto config_dir = homedir + "/.config/diceware_generator";
-  std::filesystem::create_directories(config_dir);
+  auto config_dir = util::GetConfigDir();
   config_file_ = config_dir + "/settings.txt";
 }
 
