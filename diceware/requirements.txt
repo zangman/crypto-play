@@ -17,5 +17,5 @@ pycryptodome==3.9.6
 Pygments==2.5.2
 six==1.14.0
 traitlets==4.3.3
-urllib3==1.25.8
+urllib3==1.26.5
 wcwidth==0.1.8
